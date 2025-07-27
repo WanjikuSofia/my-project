@@ -252,11 +252,4 @@ Inspired by premium templates (UI8, Dribbble):
 
 Contributions are welcome! Please fork the repository, make your changes, and submit a pull request. Ensure all tests pass and code formatting complies with project linting rules.
 
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
-*For questions or support, please contact the maintainers or open an issue on GitHub.*
-
-Let me know if you want the README tailored for a specific audience or further sections like API docs or architecture diagrams included!
 
