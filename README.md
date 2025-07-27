@@ -1,12 +1,7 @@
 
 
-#  update README.md
+# Luxora Boutique
 
-Certainly! Below is a detailed, well-structured `README.md` in Markdown format that reflects the full Luxora e-commerce MERN stack monorepo project as per your specifications, including the monorepo structure, tech stack, key features, and usage instructions.
-
-# Luxora E-Commerce Platform
-
-[
 
 **Luxora** is a premium online boutique storefront built with the MERN stack and TypeScript, designed to merge aesthetics, performance, and security. The platform features a luxury UI experience with ultra-responsive design, smooth animations, and intelligent business logic, optimized for modern devices and global users.
 
