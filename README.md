@@ -1,6 +1,7 @@
 
 
 # Luxora Boutique
+![alt text](image.png)
 
 
 **Luxora** is a premium online boutique storefront built with the MERN stack and TypeScript, designed to merge aesthetics, performance, and security. The platform features a luxury UI experience with ultra-responsive design, smooth animations, and intelligent business logic, optimized for modern devices and global users.
