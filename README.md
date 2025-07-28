@@ -67,10 +67,9 @@ luxora-ecommerce/
 | :-- | :-- |
 | Frontend | React, TypeScript, Vite, Tailwind CSS, Framer Motion |
 | Backend | Node.js, Express.js, TypeScript, MongoDB, Mongoose, Cloudinary |
-| Authentication | JWT, bcrypt, Cookie-based authentication |
+| Authentication | JWT, bcrypt |
 | Utilities | Yup, React Hook Form (validation), Axios (API calls) |
-| Security | Helmet, CORS, express-rate-limit |
-| Monorepo | Turborepo or Nx for task running and workspace management |
+| Security | CORS, express-rate-limit |
 
 ## Features
 
@@ -251,5 +250,3 @@ Inspired by premium templates (UI8, Dribbble):
 ## Contributing
 
 Contributions are welcome! Please fork the repository, make your changes, and submit a pull request. Ensure all tests pass and code formatting complies with project linting rules.
-
-
