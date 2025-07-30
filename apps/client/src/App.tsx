@@ -9,6 +9,8 @@ import Home from './pages/Home';
 import Collection from './pages/Collection';
 import ProductDetail from './pages/ProductDetail';
 import Admin from './pages/Admin';
+import Profile from './pages/Profile';
+import Orders from './pages/Orders';
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
                 <Route path="/collection/:category" element={<Collection />} />
                 <Route path="/product/:slug" element={<ProductDetail />} />
                 <Route path="/admin" element={<Admin />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/orders" element={<Orders />} />
               </Routes>
             </main>
             <Footer />

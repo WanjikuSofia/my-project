@@ -1,23 +1,26 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import Button from '../ui/Button';
-import Input from '../ui/Input';
-import Card from '../ui/Card';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import Button from "../ui/Button";
+import Input from "../ui/Input";
+import Card from "../ui/Card";
 
 interface SignupFormProps {
   onSwitchToLogin: () => void;
   onClose: () => void;
 }
 
-const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin, onClose }) => {
+const SignupForm: React.FC<SignupFormProps> = ({
+  onSwitchToLogin,
+  onClose,
+}) => {
   const { signup, isLoading, error, clearError } = useAuth();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -25,31 +28,31 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin, onClose }) => 
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
-    
+
     if (!formData.name.trim()) {
-      errors.name = 'Name is required';
+      errors.name = "Name is required";
     } else if (formData.name.trim().length < 2) {
-      errors.name = 'Name must be at least 2 characters';
+      errors.name = "Name must be at least 2 characters";
     }
-    
+
     if (!formData.email) {
-      errors.email = 'Email is required';
+      errors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Please enter a valid email';
+      errors.email = "Please enter a valid email";
     }
-    
+
     if (!formData.password) {
-      errors.password = 'Password is required';
+      errors.password = "Password is required";
     } else if (formData.password.length < 6) {
-      errors.password = 'Password must be at least 6 characters';
+      errors.password = "Password must be at least 6 characters";
     }
-    
+
     if (!formData.confirmPassword) {
-      errors.confirmPassword = 'Please confirm your password';
+      errors.confirmPassword = "Please confirm your password";
     } else if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
+      errors.confirmPassword = "Passwords do not match";
     }
-    
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -57,24 +60,31 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin, onClose }) => 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
-    
+
     if (!validateForm()) return;
-    
+
     try {
+      console.log("Attempting to sign up with:", {
+        email: formData.email,
+        name: formData.name,
+        password: "***",
+      });
       await signup(formData.email, formData.password, formData.name);
+      console.log("Signup successful!");
       onClose();
     } catch (error) {
+      console.error("Signup error:", error);
       // Error is handled by the auth context
     }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     // Clear field error when user starts typing
     if (formErrors[name]) {
-      setFormErrors(prev => ({ ...prev, [name]: '' }));
+      setFormErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -136,7 +146,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin, onClose }) => 
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <Input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               name="password"
               placeholder="Create a password"
               value={formData.password}
@@ -150,14 +160,18 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin, onClose }) => 
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
             </button>
           </div>
 
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <Input
-              type={showConfirmPassword ? 'text' : 'password'}
+              type={showConfirmPassword ? "text" : "password"}
               name="confirmPassword"
               placeholder="Confirm your password"
               value={formData.confirmPassword}
@@ -171,7 +185,11 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin, onClose }) => 
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showConfirmPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
@@ -183,12 +201,18 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin, onClose }) => 
             className="w-4 h-4 text-luxury-gold focus:ring-luxury-gold border-gray-300 rounded mt-1"
           />
           <span className="ml-2 text-sm text-gray-600">
-            I agree to the{' '}
-            <button type="button" className="text-luxury-gold hover:text-luxury-gold-dark">
+            I agree to the{" "}
+            <button
+              type="button"
+              className="text-luxury-gold hover:text-luxury-gold-dark"
+            >
               Terms of Service
-            </button>{' '}
-            and{' '}
-            <button type="button" className="text-luxury-gold hover:text-luxury-gold-dark">
+            </button>{" "}
+            and{" "}
+            <button
+              type="button"
+              className="text-luxury-gold hover:text-luxury-gold-dark"
+            >
               Privacy Policy
             </button>
           </span>
@@ -201,7 +225,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin, onClose }) => 
           loading={isLoading}
           disabled={isLoading}
         >
-          {isLoading ? 'Creating account...' : 'Create Account'}
+          {isLoading ? "Creating account..." : "Create Account"}
         </Button>
 
         <div className="text-center">

@@ -34,7 +34,7 @@ if (isDevelopment) {
   app.use(morgan('combined'));
 }
 
-// API routes
+// API routes all mounted in /api/v1
 app.use('/api/v1', routes);
 
 // Root endpoint

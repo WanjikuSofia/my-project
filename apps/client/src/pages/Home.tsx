@@ -2,13 +2,37 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Star, Truck, Shield, Headphones } from 'lucide-react';
-import { mockProducts } from '../utils/mockData';
+import { productService } from '../services/productService';
+import { categoryService } from '../services/categoryService';
+import { Product } from '../types';
 import ProductCard from '../components/product/ProductCard';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 
 const Home: React.FC = () => {
-  const featuredProducts = mockProducts.filter(product => product.featured);
+  const [featuredProducts, setFeaturedProducts] = React.useState<Product[]>([]);
+  const [categories, setCategories] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productsResponse, categoriesResponse] = await Promise.all([
+          productService.getFeaturedProducts(6),
+          categoryService.getCategories()
+        ]);
+        
+        setFeaturedProducts(productsResponse.data);
+        setCategories(categoriesResponse.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -32,8 +56,8 @@ const Home: React.FC = () => {
             transition={{ duration: 0.8 }}
           >
             <h1 className="font-serif text-5xl md:text-7xl font-bold mb-6">
-              Discover
-              <span className="text-luxury-gold"> Luxury</span>
+              Luxury
+              <span className="text-luxury-gold"> Redefined</span>
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-gray-200 max-w-2xl mx-auto">
               Discover our curated collection of premium fashion for the discerning individual
@@ -81,45 +105,26 @@ const Home: React.FC = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Women's Collection",
-                description: "Elegant pieces for the modern woman",
-                image: "https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg",
-                link: "/collection/women"
-              },
-              {
-                title: "Men's Collection",
-                description: "Sophisticated style for gentlemen",
-                image: "https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg",
-                link: "/collection/men"
-              },
-              {
-                title: "Kids' Collection",
-                description: "Luxury fashion for little ones",
-                image: "https://images.pexels.com/photos/1620760/pexels-photo-1620760.jpeg",
-                link: "/collection/kids"
-              }
-            ].map((category, index) => (
+            {categories.map((category, index) => (
               <motion.div
-                key={category.title}
+                key={category._id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.2 }}
               >
-                <Link to={category.link}>
+                <Link to={`/collection/${category.slug}`}>
                   <Card hover className="group overflow-hidden">
                     <div className="relative aspect-[4/5] overflow-hidden">
                       <img
-                        src={category.image}
-                        alt={category.title}
+                        src={category.image || `https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg`}
+                        alt={category.name}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
                       <div className="absolute bottom-6 left-6 text-white">
                         <h3 className="font-serif text-2xl font-bold mb-2">
-                          {category.title}
+                          {category.name}'s Collection
                         </h3>
                         <p className="text-gray-200 mb-4">
                           {category.description}
@@ -154,19 +159,31 @@ const Home: React.FC = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {featuredProducts.map((product, index) => (
-              <motion.div
-                key={product._id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <ProductCard product={product} />
-              </motion.div>
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {[...Array(6)].map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <div className="bg-gray-200 aspect-[3/4] rounded-2xl mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {featuredProducts.map((product, index) => (
+                <motion.div
+                  key={product._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <ProductCard product={product} />
+                </motion.div>
+              ))}
+            </div>
+          )}
 
           <motion.div
             className="text-center"

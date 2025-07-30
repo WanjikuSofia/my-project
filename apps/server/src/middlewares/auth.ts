@@ -8,7 +8,7 @@ export interface AuthRequest extends Request {
   user?: IUser;
 }
 
-export const authenticate = catchAsync(async (req: AuthRequest, res: Response, next: NextFunction) => {
+const protect = catchAsync(async (req: AuthRequest, res: Response, next: NextFunction) => {
   // Get token from header or cookies
   let token: string | undefined;
   
@@ -77,3 +77,8 @@ export const optionalAuth = catchAsync(async (req: AuthRequest, res: Response, n
 
   next();
 });
+
+// Export protect as the main authentication middleware
+export { protect };
+// Also export authenticate as an alias for backward compatibility
+export const authenticate = protect;

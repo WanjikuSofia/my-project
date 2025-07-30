@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Heart, ShoppingBag } from 'lucide-react';
-import { Product } from '../../utils/mockData';
+import { Product } from '../../types';
 import { formatCurrency } from '../../utils';
 import { useCart } from '../../contexts/CartContext';
 import Card from '../ui/Card';
@@ -22,8 +22,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     // Add with default size and color
     const defaultSize = product.sizes[0];
     const defaultColor = product.colors[0].name;
-    
-    addItem(product, defaultSize, defaultColor, 1);
+
+    // Convert product to expected shape with category as string
+    const productForCart = {
+      ...product,
+      category: typeof product.category === 'string' ? product.category : product.category.slug,
+    };
+
+    addItem(productForCart, defaultSize, defaultColor, 1);
   };
 
   return (

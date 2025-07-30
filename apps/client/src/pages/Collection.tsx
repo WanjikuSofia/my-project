@@ -1,14 +1,19 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Filter, Grid, List, SlidersHorizontal } from 'lucide-react';
-import { mockProducts, mockCategories } from '../utils/mockData';
+import { productService } from '../services/productService';
+import { categoryService } from '../services/categoryService';
+import { Product } from '../types';
 import ProductCard from '../components/product/ProductCard';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 
 const Collection: React.FC = () => {
   const { category } = useParams<{ category: string }>();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categoryInfo, setCategoryInfo] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('featured');
   const [priceRange, setPriceRange] = useState([0, 5000]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
@@ -16,31 +21,51 @@ const Collection: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
 
-  const categoryInfo = mockCategories.find(cat => cat.slug === category);
-  const categoryProducts = mockProducts.filter(product => product.category === category);
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!category) return;
+      
+      try {
+        setLoading(true);
+        const [categoryResponse, productsResponse] = await Promise.all([
+          categoryService.getCategoryBySlug(category),
+          productService.getProducts({ category, limit: 50 })
+        ]);
+        
+        setCategoryInfo(categoryResponse.data);
+        setProducts(productsResponse.data);
+      } catch (error) {
+        console.error('Error fetching collection data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [category]);
 
   // Get unique sizes and colors for filters
   const availableSizes = useMemo(() => {
     const sizes = new Set<string>();
-    categoryProducts.forEach(product => {
+    products.forEach(product => {
       product.sizes.forEach(size => sizes.add(size));
     });
     return Array.from(sizes).sort();
-  }, [categoryProducts]);
+  }, [products]);
 
   const availableColors = useMemo(() => {
     const colors = new Map<string, string>();
-    categoryProducts.forEach(product => {
+    products.forEach(product => {
       product.colors.forEach(color => {
         colors.set(color.name, color.hex);
       });
     });
     return Array.from(colors.entries()).map(([name, hex]) => ({ name, hex }));
-  }, [categoryProducts]);
+  }, [products]);
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
-    let filtered = categoryProducts.filter(product => {
+    let filtered = products.filter(product => {
       // Price filter
       if (product.price < priceRange[0] || product.price > priceRange[1]) {
         return false;
@@ -81,7 +106,7 @@ const Collection: React.FC = () => {
     }
 
     return filtered;
-  }, [categoryProducts, sortBy, priceRange, selectedSizes, selectedColors]);
+  }, [products, sortBy, priceRange, selectedSizes, selectedColors]);
 
   const handleSizeToggle = (size: string) => {
     setSelectedSizes(prev =>
@@ -106,6 +131,17 @@ const Collection: React.FC = () => {
   };
 
   if (!categoryInfo) {
+    if (loading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-luxury-gold mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading collection...</p>
+          </div>
+        </div>
+      );
+    }
+    
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -275,7 +311,17 @@ const Collection: React.FC = () => {
             </div>
 
             {/* Products Grid */}
-            {filteredProducts.length === 0 ? (
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(9)].map((_, index) => (
+                  <div key={index} className="animate-pulse">
+                    <div className="bg-gray-200 aspect-[3/4] rounded-2xl mb-4"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredProducts.length === 0 ? (
               <Card className="p-12 text-center">
                 <Filter className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="font-semibold text-lg text-gray-600 mb-2">
